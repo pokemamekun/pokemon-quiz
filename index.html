@@ -1,503 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>今日のポケモン</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-    body {
-      background-color: #e8f0e8;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-      font-family: 'Press Start 2P', monospace;
-    }
-
-    .card {
-      background: #f8f8e8;
-      border: 4px solid #2c2c2c;
-      border-radius: 4px;
-      box-shadow: 6px 6px 0px #2c2c2c;
-      padding: 20px;
-      max-width: 340px;
-      width: 100%;
-      text-align: center;
-    }
-
-    h1 {
-      color: #c03028;
-      font-size: 18px;
-      margin-bottom: 16px;
-      letter-spacing: 2px;
-      border-bottom: 3px solid #2c2c2c;
-      padding-bottom: 10px;
-    }
-
-    #img {
-      width: 160px;
-      height: 160px;
-      image-rendering: pixelated;
-      background: #d0d8c0;
-      border: 3px solid #2c2c2c;
-      padding: 8px;
-      cursor: pointer;
-    }
-
-   #img.hidden {
-  filter: brightness(0) invert(1);
-  background: #2c2c2c;
-  position: relative;
-}
-
-
-    #number {
-      font-size: 10px;
-      color: #888;
-      margin: 8px 0 0;
-      font-family: 'Press Start 2P', monospace;
-      font-weight: bold;
-    }
-
-    #name {
-      font-size: 20px;
-      font-weight: bold;
-      margin: 12px 0 6px;
-      color: #1a1a1a;
-    }
-
-    #types {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin: 6px 0 10px;
-    }
-
-    .type-badge {
-      padding: 4px 10px;
-      border: 2px solid #2c2c2c;
-      border-radius: 2px;
-      font-size: 8px;
-      font-weight: bold;
-      color: white;
-      box-shadow: 2px 2px 0px #2c2c2c;
-    }
-
-    #region {
-      font-size: 10px;
-      color: #c03028;
-      margin: 4px 0 10px;
-      letter-spacing: 1px;
-    }
-
-    #desc {
-      font-size: 14px;
-      color: #2c2c2c;
-      line-height: 2;
-      margin: 10px 0 20px;
-      text-align: left;
-      background: #d0d8c0;
-      border: 2px solid #2c2c2c;
-      padding: 10px;
-      font-family: sans-serif;
-    }
-
-    #hint {
-      font-size:14px;
-      color: #888;
-      margin:8px 0;
-      letter-spacing: 1px;
-    }
-
-    button {
-      background-color: #c03028;
-      color: white;
-      border: 3px solid #2c2c2c;
-      border-radius: 2px;
-      padding: 10px 20px;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 3px 3px 0px #2c2c2c;
-      font-family: 'Press Start 2P', monospace;
-      letter-spacing: 1px;
-    }
-
-    button:active {
-      box-shadow: none;
-      transform: translate(3px, 3px);
-    }
-    #suggestions {
-  list-style: none;
-  padding: 0;
-  margin: 4px 0 0;
-  border: 2px solid #2c2c2c;
-  background: white;
-  max-height: 150px;
-  overflow-y: auto;
-  display: none;
-  text-align: left;
-}
-
-#suggestions li {
-  padding: 8px 12px;
-  font-size: 13px;
-  font-family: sans-serif;
-  cursor: pointer;
-  border-bottom: 1px solid #ddd;
-}
-
-#suggestions li:hover {
-  background: #d0d8c0;
-}
-
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ポケモン図鑑クイズ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="card">
-    <h1>ポケモンわかるかな？</h1>
-    <div id="img-wrap" onclick="reveal()" style="
-  width:160px; height:160px;
-  margin: 0 auto;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-">
-  <img id="img" />
-  <div id="silhouette" style="
-    display:none;
-    position:absolute;
-    width:180px; height:180px;
-    background:#2c2c2c;
-    align-items:center;
-    justify-content:center;
-    font-size:80px;
-    color:white;
-    font-family:sans-serif;
-  ">？</div>
-</div>
 
-<p id="score" style="font-size:12px; margin:16px 0; font-family:'Press Start 2P',monospace;">
-  ⭕️ 0 　❌ 0
-</p>
-<div id="input-area" style="margin:8px 0;">
-  <input id="answer-input" type="text" placeholder="ポケモンの名前"
-    style="font-size:14px; padding:8px; border:2px solid #2c2c2c; width:200px; font-family:sans-serif;" />
-    <ul id="suggestions"></ul>
+  <!-- スマホロトム風のデバイス外枠 -->
+  <div id="rotom-phone">
+    
+    <!-- ロトムの目（上部） -->
+    <div id="rotom-top">
+      <div class="rotom-eye"></div>
+    </div>
 
-  <br>
-  <button onclick="checkAnswer()" style="
-    margin-top:8px;
-    background:#2c2c2c; color:white;
-    border:3px solid #2c2c2c;
-    padding:8px 16px; font-size:12px;
-    font-family:'Press Start 2P',monospace;
-    cursor:pointer;">答え合わせする！</button>
-</div>
-<p id="hint" style="font-size:20px; color:#888; margin:8px 0;"></p>
+    <!-- 画面部分 -->
+    <div id="rotom-screen">
+      
+      <!-- ==============================
+           メニュー画面 
+           ============================== -->
+      <div id="menu-screen" class="screen active">
+        <div style="text-align: center; margin-bottom: -15px; margin-top: -10px;">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" style="width: 80px; image-rendering: pixelated; filter: brightness(0) invert(0.8);">
+        </div>
+        <h2 style="font-size: 18px; white-space: nowrap; margin-bottom: 20px;">ポケモンシルエットクイズ</h2>
+        
+        <div class="menu-group">
+          <label for="mode-select">ゲームモード</label>
+          <select id="mode-select">
+            <option value="normal">ノーマル（じっくり）</option>
+            <option value="normal-hard">ハード（じっくり・姿なし）</option>
+            <option value="timeAttack">タイムアタック（60秒）</option>
+            <option value="timeAttack-hard">タイムアタック ハード（姿なし）</option>
+          </select>
+          
+          <label for="gen-select">出題範囲</label>
+          <select id="gen-select">
+            <option value="all">ぜんこく図鑑（すべて）</option>
+            <option value="gen1">第1世代（カントー）</option>
+            <option value="gen2">第2世代（ジョウト）</option>
+            <option value="gen3">第3世代（ホウエン）</option>
+            <option value="gen4">第4世代（シンオウ）</option>
+            <option value="gen5">第5世代（イッシュ）</option>
+            <option value="gen6">第6世代（カロス）</option>
+            <option value="gen7">第7世代（アローラ）</option>
+            <option value="gen8">第8世代（ガラル・ヒスイ）</option>
+            <option value="gen9">第9世代（パルデア）</option>
+          </select>
+        </div>
+        
+        <button id="start-btn">スタート！</button>
+        <div class="rank-criteria" style="margin-top: 15px; font-size: 10px; color: #a4b0be; text-align: left; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 5px; line-height: 1.5;">
+          <strong>【タイムアタック時のランク基準（正解数）】</strong><br>
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" style="width:16px; vertical-align:middle; margin-right:4px;"> マスターボール級: 10問以上<br>
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" style="width:16px; vertical-align:middle; margin-right:4px;"> ハイパーボール級: 7問以上<br>
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" style="width:16px; vertical-align:middle; margin-right:4px;"> スーパーボール級: 5問以上<br>
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" style="width:16px; vertical-align:middle; margin-right:4px;"> モンスターボール級: 4問以下
+        </div>
+      </div>
 
+      <!-- ==============================
+           ゲーム画面 
+           ============================== -->
+      <div id="game-screen" class="screen">
+        
+        <div class="game-header">
+          <button id="back-to-menu-btn" style="padding: 4px 8px; font-size: 10px; margin: 0; background: #747d8c; color: white;">◀ メニューへ</button>
+          <span id="score-display" style="margin-left: auto; margin-right: 10px;">正解数: 0</span>
+          <span id="timer-display" style="display:none; align-items:center;"></span>
+        </div>
 
-    <p id="number-genus" style="display:flex; justify-content:center; align-items:baseline; gap:12px; margin:8px 0;">
+        <div class="pokemon-display">
+          <div id="hard-mode-question" style="display:none; font-size:80px; position:absolute; color:#747d8c; font-family:sans-serif; font-weight:bold;">？</div>
+          <img id="pokemon-img" class="silhouette" src="" alt="">
+        </div>
 
-  <span id="number"></span>
-  <span id="genus" style="font-size:10px; color:#888; font-family:sans-serif;"></span>
-</p>
+        <h3 id="message-box" style="text-align:center; margin:0 0 10px 0; font-size:16px;">だーれだ？</h3>
 
-    <p id="name"></p>
-    <div id="types"></div>
-    <p id="region"></p>
-    <p id="desc"></p>
-    <button onclick="load()">次のポケモン</button>
-  </div>
+        <div id="default-info">
+          <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 5px; width: 100%; white-space: nowrap;">
+            <div id="number-display" style="font-weight: bold; color: #ffda79; font-size: 12px; flex-shrink: 0;"></div>
+            <div id="genus-display" style="font-weight: bold; color: #ffda79; font-size: 11px; flex-shrink: 1; overflow: hidden; text-overflow: ellipsis; margin: 0 4px;"></div>
+            <div id="region-display" style="font-weight: bold; color: #7bed9f; font-size: 10px; flex-shrink: 0;"></div>
+          </div>
+          <div id="type-display" style="margin-bottom: 8px; display: flex; gap: 4px; flex-wrap: wrap;"></div>
+          <div id="desc-display"></div>
+        </div>
 
-  <script>
-    const typeColors = {
-      normal:"#A8A878", fire:"#F08030", water:"#6890F0",
-      electric:"#F8D030", grass:"#78C850", ice:"#98D8D8",
-      fighting:"#C03028", poison:"#A040A0", ground:"#E0C068",
-      flying:"#A890F0", psychic:"#F85888", bug:"#A8B820",
-      rock:"#B8A038", ghost:"#705898", dragon:"#7038F8",
-      dark:"#705848", steel:"#B8B8D0", fairy:"#EE99AC"
-    };
-    const typeNames = {
-      normal:"ノーマル", fire:"ほのお", water:"みず",
-      electric:"でんき", grass:"くさ", ice:"こおり",
-      fighting:"かくとう", poison:"どく", ground:"じめん",
-      flying:"ひこう", psychic:"エスパー", bug:"むし",
-      rock:"いわ", ghost:"ゴースト", dragon:"ドラゴン",
-      dark:"あく", steel:"はがね", fairy:"フェアリー"
-    };
-    const regionMap = {
-      "generation-i": "カントー地方",
-      "generation-ii": "ジョウト地方",
-      "generation-iii": "ホウエン地方",
-      "generation-iv": "シンオウ地方",
-      "generation-v": "イッシュ地方",
-      "generation-vi": "カロス地方",
-      "generation-vii": "アローラ地方",
-      "generation-viii": "ガラル地方",
-      "generation-ix": "パルデア地方",
-    };
-    const hisuiOverride = [899,900,901,902,903,904,905];
+        <div class="input-area">
+          <input type="text" id="answer-input" placeholder="ポケモンのなまえ" autocomplete="off">
+          <ul id="suggestions"></ul>
+        </div>
+        
+        <button id="submit-btn">こたえる！</button>
+        <button id="next-btn" style="display:none; background:#7bed9f;">つぎへ！</button>
 
-    const customDesc = {
-      899: "目に見えぬ 壁を作りしとき 黒き珠 妖しく 輝きたり。 抜け落ちし 髭は 温かく 冬衣の 原料に 重宝す。",
-      900: "火山地帯で ごくまれに 見つかる 鉱石によって 体の 一部が 岩へと 変わる 進化を 遂げた。",
-      901: "海を 渡り 流れ着いた 土地で 生き抜いた 結果 特別な 姿と 能力に 変化した。",
-      902: "生まれた 川を 目指す 過酷な 道のりで 死んでいった 仲間の 魂を 体に まとっている。",
-      903: "他種圧倒する 身体能力と 猛毒 有し 寒冷なる 高地においては 敵なし。 群れ成さず 単独を良しとする 性質。",
-      904: "眠っているときでも 動くものが 近づくと 毒針が 無意識に 反応し 突き刺してくるぞ。",
-      905: "海を越えて 飛来したらば 厳しき冬の 終わりを知る。 慈愛が ヒスイの地に 新しき命 芽吹かせるとの 伝承あり。",
-      906: "フワフワの 体毛は 植物に 近い 成分。 こまめに 顔を 洗って 乾燥を 防ぐ。",
-      907: "長い 体毛の下に 隠した ツタを 器用に 操り 硬い つぼみを 敵に 叩きつける。",
-      908: "浮いているように 見える 花は マント裏の 毛の 反射で 茎を カモフラージュしているのだ。",
-      909: "温かい 岩の上で 寝転び 四角い うろこから 取り込んだ 熱で 炎エネルギーを 作る。",
-      910: "炎エネルギーと 有り余る 生命力が 交じり 頭上に タマゴ型の 火玉が 現れた。",
-      911: "歌声で 姿かたちを 変える 炎の鳥は 頭上の 火玉に 魂が 宿ったもの だという。",
-      912: "昔 遠い 土地から やって来て 棲みついた。 羽から 分泌する ジェルは 水と 汚れを 弾く。",
-      913: "ひたすらに 浅瀬を 走り込んで 足腰を 鍛え 仲間同士で 足技の 華麗さを 競いあう。",
-      914: "ひと蹴りで トラックを 転がす 強靭な 脚力を 駆使し エキゾチックな 踊りを みせる。",
-      915: "一日中 エサを 探す。 優れた 嗅覚を 持つが エサ探し 以外に 使わない。",
-      916: "きめ細かく 艶やかな 肌が 自慢。 尻尾の 先端から 凝縮した 香りを 放つ。",
-      917: "体を 包みこむ 糸玉は 天敵の ストライクの カマを はね返す 弾力性を 持つ。",
-      918: "木の枝や 天井に 糸で 張りつき 音もなく 行動する。 獲物に 気づかれる前に 倒す。",
-      919: "第3の脚が 畳まれている。 ピンチになると 10メートル以上 ジャンプする 脚力を 持つ。",
-      920: "本気になると 畳んでいた 脚で 立ち上がり 決戦モードになる。 短時間で 敵を 制圧する。",
-      921: "頬の 電気袋は 未発達。 前脚の 肉球で 懸命に 擦ると ようやく 発電できる。",
-      922: "群れが 襲われたときは 電撃を 駆使した 格闘技で 真っ先に 戦いを 挑み 敵を 倒す。",
-      923: "普段は おっとりしているが いざ 戦いになると 電光石火の 身のこなしで 敵を 叩きのめす。",
-      924: "息の合った コンビネーションで 巣の 材料に なりそうなものを 前歯で 切り出して 運び去る。",
-      925: "寝床や エサを 食べる 場所など 用途に 合わせて いくつも 部屋が 分かれた 大きな 巣を 作る。",
-      926: "しっとり すべすべの 触り心地。 吐息に 含まれている 酵母で まわりのものを 発酵させる。",
-      927: "体から 放つ 良い香りが 小麦の 成長を 助けるため 農村で 大切にされてきた。",
-      928: "頭の 実から オイルを 出して 敵から 身を 守る。 オイルは とびあがるほど 苦くて 渋い。",
-      929: "フレッシュな 香りの 美味しい オイルを 分けてくれる。 古くから 人間と 共存してきた。",
-      930: "穏やかで とても 慈悲深い。 栄養豊富な 美味しい オイルを 弱った ポケモンに 分け与える。",
-      931: "街中で 暮らすことを 好む。 羽の 色で グループを 作り 縄張り争いを 繰り広げる。",
-      932: "地底の 岩塩層で 生まれた。 貴重な 塩を 分けてくれるため 昔は とくに 大事にされた。",
-      933: "塩を 噴き出して 獲物に 浴びせ 塩漬けにしてしまう。 体内の 水分を 奪ってしまうのだ。",
-      934: "指先を 擦りあわせて 塩を ケガした ポケモンに 振りかけると ひどい 傷も たちまち 治る。",
-      935: "焼けた 木炭に 命が 宿り ポケモンになった。 燃える 闘志で 強敵にも 戦いを 挑む。",
-      936: "多くの 武勲を 立てた 戦士の 鎧によって 進化した 姿。 忠誠心の 厚い ポケモン。",
-      937: "両腕の 炎の剣は 志半ばで 力つきた 剣士の 怨念で 燃え上がる。",
-      938: "尻尾を 振って 発電する。 危険を 感じると 頭を 点滅させて 仲間に 伝える。",
-      939: "ブヨンブヨンの 体を 伸び縮み させると お腹の へそダイナモが 大電力を 発生させる。",
-      940: "翼の 骨は 風を 受けると 電気を 作る。 海に 飛び込み 獲物を 感電させて 捕らえる。",
-      941: "のど袋を ふくらませて 電気を 増幅させる。 風に 乗って 1日で 700キロを 飛行する。",
-      942: "相手に 嘗められないように いつも しかめっ面をしているが 泣いている 子どもは その顔で 笑いだす。",
-      943: "大きな のど袋に エネルギーを 蓄えることができる。 一気に 放出して 敵を 吹き飛ばす。",
-      944: "温厚だが 怒らせると 毒が 染みこんだ 鋭い 前歯で 咬みつき 痺れさせてくるぞ。",
-      945: "エサによって 色が 変化する 毒の 唾液を 指に 塗して 森の 木々に 模様を 描く。",
-      946: "成仏できない 魂が 風に 吹かれているうち 枯草を 巻き込んで ポケモンになった。",
-      947: "頭の 枝を 開いて 獲物を 飲みこむ。 生気を 存分に 吸い取ると 吐き出して 捨てるのだ。",
-      948: "じめじめした 森の中で 暮らす。 剥がれ落ちた 体の ヒラヒラは 歯ごたえがあって とても 美味しい。",
-      949: "森の奥に 集団で 暮らす コロニーを 作る。 よそ者が 近寄ることを ひどく 嫌う。",
-      950: "逆さまになって 崖の 上から 獲物を 狙うが 頭に 血が上るので 長くは 待てない。",
-      951: "太陽の 光を 浴びるほど 体内で 辛み成分が 増えて 技が どんどん 辛くなるのだ。",
-      952: "レッドヘッドは 辛み成分を 炎エネルギーに 変え 激辛の 火炎放射を まき散らす。",
-      953: "エスパーエネルギーを 混ぜこみながら 土と 砂で 泥玉を 作る。 泥玉は 命より 大切。",
-      954: "玉を 支える 体は ほとんど 動かないため 本体は 玉の中にいると 考えられている。",
-      955: "お腹の ヒラヒラから 放射する サイコパワーで わずか 1センチだけ つま先が 地面から 浮いている。",
-      956: "大きな 瞳から サイコパワーを 浴びせて 相手を 動けなくする。 見かけによらず 気性は 荒い。",
-      957: "手作りの ハンマーを 振りまわして 身を 守るが 金属を 食べる ポケモンには よく 奪われる。",
-      958: "大きくて 頑丈な ハンマーを 作るために キリキザンの 群れを 襲って 金属を 集める。",
-      959: "知能が 高く とても 豪快。 ハンマーで 岩を 殴り飛ばして 空飛ぶ アーマーガアを 狙う。",
-      960: "20メートル先の ミガルーサが 放つ 匂いも 嗅ぎとって 砂の中に 身を 隠すのだ。",
-      961: "見かけによらず 気性が 荒い。 長い 体で 獲物を 締め上げ 巣穴に 引きずりこむぞ。",
-      962: "胸の 羽毛と 抜け落ちた 羽根で 作った 袋に 物を 入れて 高いところから 落として 遊ぶ。",
-      963: "尾びれの 水のリングで 仲間と 遊ぶのが 好き。 超音波で 生き物の 気持ちを 察知する。",
-      964: "太古の 遺伝子が 覚醒。 片ヒレで クルーズ船を 軽々 持ち上げる 怪力の 持ち主。",
-      965: "スクラップ工場に 放置された エンジンに 謎の 毒ポケモンが 入り込んで 生まれたと 言われる。",
-      966: "毒素と 岩の 成分を 混ぜた ガスを 8つに 増えた シリンダーで 爆発させ エネルギーを 作る。",
-      967: "大昔から 人を 背中に 乗せていたらしい。 1万年前の 壁画に 様子が 描かれている。",
-      968: "敵に 襲われると 体毛を こぶしのように 使い パンチの 嵐を お見舞いするのだ。",
-      969: "洞窟の 壁から 栄養分を 吸収。 毒の 結晶で できた 花びらを 身にまとう。",
-      970: "危険を 察知すると 結晶の 花びらを 開いて 円錐形の 体から ビームを 発射する。",
-      971: "人と 関わることなく 命を 落とした 野良の 犬ポケモンが 生まれ変わったと 言われている。",
-      972: "普段は 墓場で 眠っている。 数いる 犬ポケモンの中でも もっとも 主に 忠実だ。",
-      973: "お腹に 溜めた エネルギーが くちばしから 漏れないように 首を 根元で 結んでいるらしい。",
-      974: "遥か 昔に 海から 上がって 陸地で 暮らすようになった。 ホエルコに 近い 種類らしい。",
-      975: "氷雪地帯を 回遊する。 強靭な 筋肉と ぶ厚い 皮下脂肪で 体を 守る。",
-      976: "無駄な 肉を 捨て去ると 心が 研ぎ澄まされ サイコパワーが 上がる。 贅肉は 淡白だが 美味しい。",
-      977: "大食らいだが エサを 取るのは 苦手。 シャリタツと コンビを 組んで 獲物を 捕らえるのだ。",
-      978: "小型の ドラゴンポケモン。 ヘイラッシャの 口の中に 棲み 外敵から 身を 守っている。",
-      979: "怒りのボルテージが 臨界点を 超えたとき 肉体という 枠に 縛られない パワーを 手に入れた。",
-      980: "敵に 襲われると 太い 棘を 胴体から 突き出して 反撃。 身を切る 覚悟の 危険な 技。",
-      981: "頭と 尻尾の 2つの 脳波が 同期したことで エスパーパワーは キリンリキの 10倍 アップした",
-      982: "硬い 尻尾で 地中 深くの 岩盤を くり抜き 巣を 作る。 巣穴は 長さ10キロに およぶ。",
-      983: "ドドゲザンに 進化できるのは 大軍勢の 頂点に 立った 1匹の キリキザンだけなのだ。",
-      984: "近年 目撃例が ある。 イダイナキバという 名は ある本に 記された 生物から 取られた。",
-      985: "目撃例は 過去 1件のみ。 古い 探検記に 記された 謎の 生物に 似た ポケモン。",
-      986: "ある本の中で アラブルタケと 記されていた 生物は このポケモンの 可能性がある。",
-      987: "とある 書物に 登場する ハバタクカミという 生物と 似た 特徴を 持つ ポケモン。",
-      988: "古い 本で チヲハウハネと 紹介されている 生物に 似た点が ある 謎のポケモン。",
-      989: "捕獲例は ゼロ。 データ不足。 ある 探検記に 記された 生物と 特徴が 一致する。",
-      990: "オカルト雑誌が 紹介した 宇宙人が 送り込んできた 科学兵器に よく 似ている。",
-      991: "オカルト雑誌の 記事になった 太古の 文明が 生み出した ロボットに 形が 似ている。",
-      992: "あるアスリートが 改造された 姿だと オカルト雑誌が スクープした サイボーグに 近い。",
-      993: "ロボットに 恋した サザンドラの 子どもと オカルト雑誌が 取り上げた ポケモンに 似ている。",
-      994: "人類を 監視する UFOだと オカルト雑誌が 紹介した 未知の 物体に 似ている。",
-      995: "10億年後の バンギラスと 怪しい 雑誌が 取り上げていた ポケモンに 似た 部分が ある。",
-      996: "背びれで 熱を 吸収して 氷エネルギーに 変換する。 高温ほど エネルギーが 溜まる。",
-      997: "まわりの 空気を 凍らせて 氷のマスクで 顔を 守り 背びれを 氷の剣に 変える。",
-      998: "極低温の 冷気を 口から 噴射。 灼熱の マグマでも 瞬時に 凍りつかせてしまう。",
-      999: "およそ1500年前 宝箱の中で 生まれた。 宝を 盗む 不埒者の 生気を 吸い取る。",
-      1000: "1000枚の コインで 体が できているらしい。 人懐こく だれとでも すぐに 仲良くなれる。",
-      1001: "王の 悪事を 木簡に 記し 処罰された 人の 恨みが 枯葉を まとい ポケモンとなった。",
-      1002: "100トンの 積雪を 操る。 雪崩を 起こして その中を 出入りして 無邪気に 遊ぶ。",
-      1003: "古の 儀式で 使われた 器に 注がれた 恐怖が 土石を まとい ポケモンとなった。",
-      1004: "3000度の 炎を 操る。 岩や 砂利を 溶かして 作った マグマの海を ゆうゆうと 泳ぐ。",
-      1005: "謎の 多い 探検記の中で トドロクツキという 名で 記された 生物の 可能性が ある。",
-      1006: "オカルト雑誌の 記事に あった マッドサイエンティストの 発明と 近い 特徴が いくつかある。",
-      1007: "拳で 大地を 引き裂いたと 古い 探検記に 記された ツバサノオウの 正体らしい。",
-      1008: "詳細は よく わかっていない。 モトトカゲに 似た 印象だが はるかに 強く 冷酷なのだ。",
-      1009: "謎多き 凶暴な 生物。 古い 探検記に 記された 水の 怪物から 名付けられた。",
-      1010: "オカルト雑誌が 取り上げた 未来の ビリジオンの 姿と 多くの 特徴が 一致する。",
-      1011: "ある 地域だけで 栽培される 特別な りんごで 進化した。 2匹で 1匹の ポケモンなのだ。",
-      1012: "茶の道を 極めきれず 死んだ 茶道家の 無念が 抹茶に 宿り ポケモンになったらしい。",
-      1013: "お茶の ふりをして 間違えて 飲んでしまった 相手の 生気を 吸い取ろうとするが ばれがちだ。",
-      1014: "首に ついた 毒素の 鎖で 全身の 筋肉が 刺激され たくましい 体に 変貌した。",
-      1015: "能力を 引き出す 毒素で できた 鎖に 脳を 刺激され サイコパワーが 開花した。",
-      1016: "体に 巻きついた 鎖から 出る 毒素の 刺激で 美しい 姿と 声を 手に入れた。",
-      1017: "身に着ける 仮面によって タイプが 変わる。 俊敏な 身のこなしと 蹴り技で 敵を 翻弄する。",
-      1018: "まわりから 静電気を 集める。 四つん這いの 体勢で 撃ち出す ビームは 絶大な 威力。",
-      1019: "7匹の オロチュが 蜜飴で 作った りんごのなかで 暮らす。 真ん中の オロチュが 司令塔。",
-      1020: "目撃報告は ごくわずか。 火柱を 噴き 暴れる 姿の 短い 映像が 存在する。",
-      1021: "体毛から 放つ 雷で あたりを 焼きつくすと いわれる。 詳しいことは わかっていない。",
-      1022: "悪の 組織に 改造された テラキオン と 怪しい雑誌が とりあげた ポケモンに 似ている。",
-      1023: "コバルオン型の 最新 兵器 と オカルト雑誌が 紹介した 謎の 物体に 似ている。",
-      1024: "エネルギーを 硬い 結晶に 変える 能力で 身を 守る。 テラスタルの おおもとの ポケモン。",
-      1025: "欲望と 能力を 引き出す 毒素の 餅を 食べさせて 食べた 相手を 鎖で 操るのだ。"
-    };
-const allPokemonNames = ["フシギダネ","フシギソウ","フシギバナ","ヒトカゲ","リザード","リザードン","ゼニガメ","カメール","カメックス","キャタピー","トランセル","バタフリー","ビードル","コクーン","スピアー","ポッポ","ピジョン","ピジョット","コラッタ","ラッタ","オニスズメ","オニドリル","アーボ","アーボック","ピカチュウ","ライチュウ","サンド","サンドパン","ニドラン♀","ニドリーナ","ニドクイン","ニドラン♂","ニドリーノ","ニドキング","ピッピ","ピクシー","ロコン","キュウコン","プリン","プクリン","ズバット","ゴルバット","ナゾノクサ","クサイハナ","ラフレシア","パラス","パラセクト","コンパン","モルフォン","ディグダ","ダグトリオ","ニャース","ペルシアン","コダック","ゴルダック","マンキー","オコリザル","ガーディ","ウインディ","ニョロモ","ニョロゾ","ニョロボン","ケーシィ","ユンゲラー","フーディン","ワンリキー","ゴーリキー","カイリキー","マダツボミ","ウツドン","ウツボット","メノクラゲ","ドククラゲ","イシツブテ","ゴローン","ゴローニャ","ポニータ","ギャロップ","ヤドン","ヤドラン","コイル","レアコイル","カモネギ","ドードー","ドードリオ","パウワウ","ジュゴン","ベトベター","ベトベトン","シェルダー","パルシェン","ゴース","ゴースト","ゲンガー","イワーク","スリープ","スリーパー","クラブ","キングラー","ビリリダマ","マルマイン","タマタマ","ナッシー","カラカラ","ガラガラ","サワムラー","エビワラー","ベロリンガ","ドガース","マタドガス","サイホーン","サイドン","ラッキー","モンジャラ","ガルーラ","タッツー","シードラ","トサキント","アズマオウ","ヒトデマン","スターミー","バリヤード","ストライク","ルージュラ","エレブー","ブーバー","カイロス","ケンタロス","コイキング","ギャラドス","ラプラス","メタモン","イーブイ","シャワーズ","サンダース","ブースター","ポリゴン","オムナイト","オムスター","カブト","カブトプス","プテラ","カビゴン","フリーザー","サンダー","ファイヤー","ミニリュウ","ハクリュー","カイリュー","ミュウツー","ミュウ","チコリータ","ベイリーフ","メガニウム","ヒノアラシ","マグマラシ","バクフーン","ワニノコ","アリゲイツ","オーダイル","オタチ","オオタチ","ホーホー","ヨルノズク","レディバ","レディアン","イトマル","アリアドス","クロバット","チョンチー","ランターン","ピチュー","ピィ","ププリン","トゲピー","トゲチック","ネイティ","ネイティオ","メリープ","モココ","デンリュウ","キレイハナ","マリル","マリルリ","ウソッキー","ニョロトノ","ハネッコ","ポポッコ","ワタッコ","エイパム","ヒマナッツ","キマワリ","ヤンヤンマ","ウパー","ヌオー","エーフィ","ブラッキー","ヤミカラス","ヤドキング","ムウマ","アンノーン","ソーナンス","キリンリキ","クヌギダマ","フォレトス","ノコッチ","グライガー","ハガネール","ブルー","グランブル","ハリーセン","ハッサム","ツボツボ","ヘラクロス","ニューラ","ヒメグマ","リングマ","マグマッグ","マグカルゴ","ウリムー","イノムー","サニーゴ","テッポウオ","オクタン","デリバード","マンタイン","エアームド","デルビル","ヘルガー","キングドラ","ゴマゾウ","ドンファン","ポリゴン2","オドシシ","ドーブル","バルキー","カポエラー","ムチュール","エレキッド","ブビィ","ミルタンク","ハピナス","ライコウ","エンテイ","スイクン","ヨーギラス","サナギラス","バンギラス","ルギア","ホウオウ","セレビィ","キモリ","ジュプトル","ジュカイン","アチャモ","ワカシャモ","バシャーモ","ミズゴロウ","ヌマクロー","ラグラージ","ポチエナ","グラエナ","ジグザグマ","マッスグマ","ケムッソ","カラサリス","アゲハント","マユルド","ドクケイル","ハスボー","ハスブレロ","ルンパッパ","タネボー","コノハナ","ダーテング","スバメ","オオスバメ","キャモメ","ペリッパー","ラルトス","キルリア","サーナイト","アメタマ","アメモース","キノココ","キノガッサ","ナマケロ","ヤルキモノ","ケッキング","ヤミラミ","クチート","ココドラ","コドラ","ボスゴドラ","アサナン","チャーレム","ラクライ","ライボルト","プラスル","マイナン","バルビート","イルミーゼ","ロゼリア","ゴクリン","マルノーム","キバニア","サメハダー","ホエルコ","ホエルオー","ドンメル","バクーダ","コータス","バネブー","ブーピッグ","パッチール","ナックラー","ビブラーバ","フライゴン","サボネア","ノクタス","チルット","チルタリス","ザングース","ハブネーク","ルナトーン","ソルロック","ドジョッチ","ナマズン","ヘイガニ","シザリガー","ヤジロン","ネンドール","リリーラ","ユレイドル","アノプス","アーマルド","ヒンバス","ミロカロス","ポワルン","カクレオン","カゲボウズ","ジュペッタ","ヨマワル","サマヨール","トロピウス","チリーン","アブソル","ソーナノ","ユキワラシ","オニゴーリ","タマザラシ","トドグラー","トドゼルガ","パールル","ハンテール","サクラビス","ジーランス","ラブカス","タツベイ","コモルー","ボーマンダ","ダンバル","メタング","メタグロス","レジロック","レジアイス","レジスチル","ラティアス","ラティオス","カイオーガ","グラードン","レックウザ","ジラーチ","デオキシス","ナエトル","ハヤシガメ","ドダイトス","ヒコザル","モウカザル","ゴウカザル","ポッチャマ","ポッタイシ","エンペルト","ムックル","ムクバード","ムクホーク","ビッパ","ビーダル","コロボーシ","コロトック","コリンク","ルクシオ","レントラー","スボミー","ロズレイド","ズガイドス","ラムパルド","タテトプス","トリデプス","ミノムッチ","ミノマダム","ガーメイル","ミツハニー","ビークイン","パチリス","ブイゼル","フローゼル","チェリンボ","チェリム","カラナクシ","トリトドン","エテボース","フワンテ","フワライド","ミミロル","ミミロップ","ムウマージ","ドンカラス","ニャルマー","ブニャット","リーシャン","スカンプー","スカタンク","ドーミラー","ドータクン","ウソハチ","マネネ","ピンプク","ペラップ","ミカルゲ","フカマル","ガバイト","ガブリアス","ゴンベ","リオル","ルカリオ","ヒポポタス","カバルドン","スコルピ","ドラピオン","グレッグル","ドクロッグ","マスキッパ","ケイコウオ","ネオラント","タマンタ","ユキカブリ","ユキノオー","マニューラ","ジバコイル","ベロベルト","ドサイドン","モジャンボ","エレキブル","ブーバーン","トゲキッス","メガヤンマ","リーフィア","グレイシア","グライオン","マンムー","ポリゴンZ","エルレイド","ダイノーズ","ヨノワール","ユキメノコ","ロトム","ユクシー","エムリット","アグノム","ディアルガ","パルキア","ヒードラン","レジギガス","ギラティナ","クレセリア","フィオネ","マナフィ","ダークライ","シェイミ","アルセウス","ビクティニ","ツタージャ","ジャノビー","ジャローダ","ポカブ","チャオブー","エンブオー","ミジュマル","フタチマル","ダイケンキ","ミネズミ","ミルホッグ","ヨーテリー","ハーデリア","ムーランド","チョロネコ","レパルダス","ヤナップ","ヤナッキー","バオップ","バオッキー","ヒヤップ","ヒヤッキー","ムンナ","ムシャーナ","マメパト","ハトーボー","ケンホロウ","シママ","ゼブライカ","ダンゴロ","ガントル","ギガイアス","コロモリ","ココロモリ","モグリュー","ドリュウズ","タブンネ","ドッコラー","ドテッコツ","ローブシン","オタマロ","ガマガル","ガマゲロゲ","ナゲキ","ダゲキ","クルミル","クルマユ","ハハコモリ","フシデ","ホイーガ","ペンドラー","モンメン","エルフーン","チュリネ","ドレディア","バスラオ","メグロコ","ワルビル","ワルビアル","ダルマッカ","ヒヒダルマ","マラカッチ","イシズマイ","イワパレス","ズルッグ","ズルズキン","シンボラー","デスマス","デスカーン","プロトーガ","アバゴーラ","アーケン","アーケオス","ヤブクロン","ダストダス","ゾロア","ゾロアーク","チラーミィ","チラチーノ","ゴチム","ゴチミル","ゴチルゼル","ユニラン","ダブラン","ランクルス","コアルヒー","スワンナ","バニプッチ","バニリッチ","バイバニラ","シキジカ","メブキジカ","エモンガ","カブルモ","シュバルゴ","タマゲタケ","モロバレル","プルリル","ブルンゲル","ママンボウ","バチュル","デンチュラ","テッシード","ナットレイ","ギアル","ギギアル","ギギギアル","シビシラス","シビビール","シビルドン","リグレー","オーベム","ヒトモシ","ランプラー","シャンデラ","キバゴ","オノンド","オノノクス","クマシュン","ツンベアー","フリージオ","チョボマキ","アギルダー","マッギョ","コジョフー","コジョンド","クリムガン","ゴビット","ゴルーグ","コマタナ","キリキザン","バッフロン","ワシボン","ウォーグル","バルチャイ","バルジーナ","クイタラン","アイアント","モノズ","ジヘッド","サザンドラ","メラルバ","ウルガモス","コバルオン","テラキオン","ビリジオン","トルネロス","ボルトロス","レシラム","ゼクロム","ランドロス","キュレム","ケルディオ","メロエッタ","ゲノセクト","ハリマロン","ハリボーグ","ブリガロン","フォッコ","テールナー","マフォクシー","ケロマツ","ゲコガシラ","ゲッコウガ","ホルビー","ホルード","ヤヤコマ","ヒノヤコマ","ファイアロー","コフキムシ","コフーライ","ビビヨン","シシコ","カエンジシ","フラベベ","フラエッテ","フラージェス","メェークル","ゴーゴート","ヤンチャム","ゴロンダ","トリミアン","ニャスパー","ニャオニクス","ヒトツキ","ニダンギル","ギルガルド","シュシュプ","フレフワン","ペロッパフ","ペロリーム","マーイーカ","カラマネロ","カメテテ","ガメノデス","クズモー","ドラミドロ","ウデッポウ","ブロスター","エリキテル","エレザード","チゴラス","ガチゴラス","アマルス","アマルルガ","ニンフィア","ルチャブル","デデンネ","メレシー","ヌメラ","ヌメイル","ヌメルゴン","クレッフィ","ボクレー","オーロット","バケッチャ","パンプジン","カチコール","クレベース","オンバット","オンバーン","ゼルネアス","イベルタル","ジガルデ","ディアンシー","フーパ","ボルケニオン","モクロー","フクスロー","ジュナイパー","ニャビー","ニャヒート","ガオガエン","アシマリ","オシャマリ","アシレーヌ","ツツケラ","ケララッパ","ドデカバシ","ヤングース","デカグース","アゴジムシ","デンヂムシ","クワガノン","マケンカニ","ケケンカニ","オドリドリ","アブリー","アブリボン","イワンコ","ルガルガン","ヨワシ","ヒドイデ","ドヒドイデ","ドロバンコ","バンバドロ","シズクモ","オニシズクモ","カリキリ","ラランテス","ネマシュ","マシェード","ヤトウモリ","エンニュート","ヌイコグマ","キテルグマ","アマカジ","アママイコ","アマージョ","キュワワー","ヤレユータン","ナゲツケサル","コソクムシ","グソクムシャ","スナバァ","シロデスナ","タイプ：ヌル","シルヴァディ","メテノ","ネッコアラ","バクガメス","トゲデマル","ミミッキュ","ハギギシリ","ジャラコ","ジャランゴ","ジャラランガ","カプ・コケコ","カプ・テテフ","カプ・ブルル","カプ・レヒレ","コスモッグ","コスモウム","ソルガレオ","ルナアーラ","ウツロイド","マッシブーン","フェローチェ","デンジュモク","テッカグヤ","カミツルギ","アクジキング","ネクロズマ","マギアナ","マーシャドー","ベベノム","アーゴヨン","ツンデツンデ","ズガドーン","ゼラオラ","メルタン","メルメタル","サルノリ","バチンキー","ゴリランダー","ヒバニー","ラビフット","エースバーン","メッソン","ジメレオン","インテレオン","ホシガリス","ヨクバリス","ココガラ","アオガラス","アーマーガア","サッチムシ","レドームシ","イオルブ","クスネ","フォクスライ","ヒメンカ","ワタシラガ","ウールー","バイウールー","カムカメ","カジリガメ","ワンパチ","パルスワン","タンドン","トロッゴン","セキタンザン","カジッチュ","アップリュー","タルップル","スナヘビ","サダイジャ","ウッウ","サシカマス","カマスジョー","エレズン","ストリンダー","ヤクデ","マルヤクデ","タタッコ","オトスパス","ヤバチャ","ポットデス","ミブリム","テブリム","ブリムオン","ベロバー","ギモー","オーロンゲ","タチフサグマ","ニャイキング","サニゴーン","ネギガナイト","バリコオル","デスバーン","マホミル","マホイップ","タイレーツ","バチンウニ","ユキハミ","モスノウ","イシヘンジン","コオリッポ","イエッサン","モルペコ","ゾウドウ","ダイオウドウ","パッチラゴン","パッチルドン","ウオノラゴン","ウオチルドン","ジュラルドン","ドラメシヤ","ドロンチ","ドラパルト","ザシアン","ザマゼンタ","ムゲンダイナ","ダクマ","ウーラオス","ザルード","レジエレキ","レジドラゴ","ブリザポス","レイスポス","バドレックス","アヤシシ","バサギリ","ガチグマ","イダイトウ","オオニューラ","ハリーマン","ラブトロス","ニャオハ","ニャローテ","マスカーニャ","ホゲータ","アチゲータ","ラウドボーン","クワッス","ウェルカモ","ウェーニバル","グルトン","パフュートン","タマンチュラ","ワナイダー","マメバッタ","エクスレッグ","パモ","パモット","パーモット","ワッカネズミ","イッカネズミ","パピモッチ","バウッツェル","ミニーブ","オリーニョ","オリーヴァ","イキリンコ","コジオ","ジオヅム","キョジオーン","カルボウ","グレンアルマ","ソウブレイズ","ズピカ","ハラバリー","カイデン","タイカイデン","オラチフ","マフィティフ","シルシュルー","タギングル","アノクサ","アノホラグサ","ノノクラゲ","リククラゲ","ガケガニ","カプサイジ","スコヴィラン","シガロコ","ベラカス","ヒラヒナ","クエスパトラ","カヌチャン","ナカヌチャン","デカヌチャン","ウミディグダ","ウミトリオ","オトシドリ","ナミイルカ","イルカマン","ブロロン","ブロロローム","モトトカゲ","ミミズズ","キラーメ","キラフロル","ボチ","ハカドッグ","カラミンゴ","アルクジラ","ハルクジラ","ミガルーサ","ヘイラッシャ","シャリタツ","コノヨザル","ドオー","リキキリン","ノココッチ","ドドゲザン","イダイナキバ","サケブシッポ","アラブルタケ","ハバタクカミ","チヲハウハネ","スナノケガワ","テツノワダチ","テツノツツミ","テツノカイナ","テツノコウベ","テツノドクガ","テツノイバラ","セビエ","セゴール","セグレイブ","コレクレー","サーフゴー","トドロクツキ","テツノブジン","コライドン","ミライドン","ウネルミナモ","テツノイサハ","カミッチュ","チャデス","ヤバソチャ","イイネイヌ","マシマシラ","キチキギス","オーガポン","ブリジュラス","カミツオロチ","ウガツホムラ","タケルライコ","テツノイワオ","テツノカシラ","テラパゴス","モモワロウ","ハリテヤマ"];
+      </div>
 
-    let revealed = false;
-    let correctCount = 0;
-    let wrongCount = 0;
-    let currentImgSrc = "";
-    let currentName = "";
+      <!-- ==============================
+           リザルト画面 
+           ============================== -->
+      <div id="result-screen" class="screen">
+        <h2>けっかひょう</h2>
+        <div class="result-stats">
+          <div id="final-rank" style="font-size: 24px; color: #ffda79; margin-bottom: 20px; text-shadow: 2px 2px 0 #2f3542;"></div>
+          <div id="final-score">正解数: 0</div>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button id="share-x-btn" style="background:#1da1f2; color:#fff; border-color:#2f3542; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:currentColor;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            結果をシェアする
+          </button>
+          <button id="play-again-btn">もういちど遊ぶ</button>
+        </div>
+      </div>
 
-    function load() {
-      revealed = false;
-      const id = Math.floor(Math.random() * 1025) + 1;
-      currentImgSrc = "";
-      currentName = "";
+    </div> <!-- rotom-screen 終了 -->
+  </div> <!-- rotom-phone 終了 -->
 
-      // 画像と名前だけ隠す
-      const img = document.getElementById("img");
-      img.src = "";
-      img.classList.remove("hidden");
-document.getElementById("silhouette").style.display = "flex";
-document.getElementById("answer-input").value = "";
-document.getElementById("suggestions").style.display = "none";
-document.getElementById("suggestions").innerHTML = "";
-
-document.getElementById("input-area").style.display = "block";
-document.getElementById("hint").textContent = "";
-      document.getElementById("number").textContent = "No." + String(id).padStart(4, "0");
-      document.getElementById("name").textContent = "???";
-      document.getElementById("genus").textContent = "";
-      document.getElementById("types").innerHTML = "";
-      document.getElementById("region").textContent = "";
-      document.getElementById("desc").textContent = "";
-
-      fetch("https://pokeapi.co/api/v2/pokemon/" + id)
-        .then(r => r.json())
-        .then(data => {
-          currentImgSrc = data.sprites.front_default;
-          img.src = currentImgSrc;
-          const typesDiv = document.getElementById("types");
-          typesDiv.innerHTML = "";
-          data.types.forEach(t => {
-            const name = t.type.name;
-            const badge = document.createElement("span");
-            badge.className = "type-badge";
-            badge.style.backgroundColor = typeColors[name] || "#888";
-            badge.textContent = typeNames[name] || name;
-            typesDiv.appendChild(badge);
-          });
-        });
-
-      fetch("https://pokeapi.co/api/v2/pokemon-species/" + id)
-        .then(r => r.json())
-        .then(data => {
-                    const jaName = data.names.find(n => n.language.name === "ja");
-          currentName = jaName ? jaName.name : "???";
-          const jaGenus = data.genera.find(g => g.language.name === "ja");
-          document.getElementById("genus").textContent = jaGenus ? jaGenus.genus : "";
-
-          const isHisui = hisuiOverride.includes(id);
-          const region = isHisui ? "ヒスイ地方" : (regionMap[data.generation?.name] || "");
-          document.getElementById("region").textContent = region ? "📍 " + region : "";
-
-          const jaDesc = data.flavor_text_entries.find(f => f.language.name === "ja");
-          const descText = jaDesc ? jaDesc.flavor_text : (customDesc[id] || "図鑑説明がありません");
-          document.getElementById("desc").textContent = descText;
-        })
-        .catch(() => {});
-    }
-    document.getElementById("answer-input").addEventListener("input", function() {
-  const val = this.value;
-  const list = document.getElementById("suggestions");
-  if (!val) {
-    list.style.display = "none";
-    return;
-  }
-  const matches = allPokemonNames.filter(n => n.startsWith(val)).slice(0, 5);
-  if (matches.length === 0) {
-    list.style.display = "none";
-    return;
-  }
-  list.innerHTML = matches.map(n =>
-    `<li onclick="selectName('${n}')">${n}</li>`
-  ).join("");
-  list.style.display = "block";
-});
-
-function selectName(name) {
-  document.getElementById("answer-input").value = name;
-  document.getElementById("suggestions").style.display = "none";
-}
-
-
-function checkAnswer() {
-  if (revealed) return;
-  const input = document.getElementById("answer-input").value.trim();
-
-  revealed = true;
-  document.getElementById("silhouette").style.display = "none";
-  document.getElementById("name").textContent = currentName || "???";
-  document.getElementById("input-area").style.display = "none";
-
-  if (input === currentName) {
-    correctCount++;
-    document.getElementById("hint").textContent = "○ あたり！";
-    document.getElementById("hint").style.color = "#FF0000";
-  } else {
-    wrongCount++;
-    document.getElementById("hint").textContent = "✖︎ はずれ…";
-    document.getElementById("hint").style.color = "#0000FF";
-  }
-
-  document.getElementById("score").textContent =
-    `⭕️ ${correctCount} 　❌ ${wrongCount}`;
-}
-
-function reveal() {
-  if (revealed) return;
-  revealed = true;
-  document.getElementById("silhouette").style.display = "none";
-  document.getElementById("hint").textContent = "✓ こたえを見た";
-  document.getElementById("hint").style.color = "#888";
-  document.getElementById("name").textContent = currentName || "???";
-  document.getElementById("input-area").style.display = "none";
-  wrongCount++;
-  document.getElementById("score").textContent =
-    `✅ ${correctCount} 　❌ ${wrongCount}`;
-}
-    load();
-  </script>
+  <!-- スクリプトの読み込み -->
+  <script src="data.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
